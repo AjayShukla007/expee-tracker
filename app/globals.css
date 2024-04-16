@@ -5,7 +5,7 @@
 :root {
   --foreground-rgb: 0, 0, 0;
 }
-
+/* **this is for if user enabled dark ode in their setting */
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
