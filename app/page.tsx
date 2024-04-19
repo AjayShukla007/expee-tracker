@@ -3,7 +3,7 @@ import Image from 'next/image'
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, getDoc, QuerySnapshot, query, onSnapshot } from "firebase/firestore";
 import { db } from './firebase';
 
 interface Items {
@@ -15,9 +15,9 @@ interface Items {
 export default function Home() {
 
   const [items, setitems] = useState([
-    { name: 'coffee', price: 4.95 },
-    { name: 'movie', price: 20.00 },
-    { name: 'kurkure', price: 5.00 }
+    // { name: 'coffee', price: 4.95 },
+    // { name: 'movie', price: 20.00 },
+    // { name: 'kurkure', price: 5.00 }
   ])
 
   const [newItem, setNewItem] = useState<Items>({
@@ -50,6 +50,26 @@ export default function Home() {
 
 
   // Read items from the db 
+useEffect(() => {
+  const q = query(collection(db, 'items'))
+  const unSubscribe = onSnapshot(q, (QuerySnapshot)=>{
+    let itemsArr :any = []
+
+    QuerySnapshot.forEach((doc)=>{
+      itemsArr.push({...doc.data(), id: doc.id})
+    })
+    setitems(itemsArr)
+    
+    // read total from the itmes array
+    const calculateTotal = () => {
+      const totalPrice = itemsArr.reduce((sum: number, item: { price: number }) => sum + item.price, 0)
+      setTotal(totalPrice)
+    }
+    calculateTotal()
+    return () => unSubscribe()
+  })
+
+}, [])
 
   // update items from the db
 
