@@ -24,15 +24,20 @@ export default function Home() {
     price: 0
   })
   const [total, setTotal] = useState(0)
-  const [warning, setWarning] = useState<string>('')
+  const [warning, setWarning] = useState<string>(' ')
   // Add items to the db
   const addItems = async (e: any) => {
     e.preventDefault();
     
     if (newItem.name === '' || newItem.price === 0){
-      setWarning("PLEASE ENTER VAlid INPUT")
+      setWarning("PLEASE ENTER VALID INPUT")
+      setTimeout(() => {
+        setWarning(' ')
+      }, 2000);
+      // console.log(warning);
       return;
     }
+
 }
 
 
@@ -45,14 +50,14 @@ export default function Home() {
 
   return (
     <main className='flex min-h-screen flex-col items-center justify-start p-24'>
-      <p className='text-red-700'>{warning}</p>
+      <p className='text-red-700 h-2'>{warning}</p>
       <h1 className='text-4xl p-4'>Expence Tracker</h1>
       <Link href="/about">About</Link>
       <div className='bg-slate-800 p-4 rounded-lg'>
         <form className='grid grid-cols-6 items-center text-black'>
           <input onChange={(e: any) => setNewItem({ ...newItem, name: e.target.value })} value={newItem.name} className='col-span-3 p-3 border ' type="text" placeholder='Enter item' />
           <input onChange={(e: any) => setNewItem({ ...newItem, price: e.target.value })} value={newItem.price} className='col-span-2 p-3 border mx-3' type="number" placeholder='Enter $' />
-          <button className='text-white bg-slate-950 hover:bg-slate-900 p-3 text-xl' type='submit'>+</button>
+          <button onClick={addItems} className='text-white bg-slate-950 hover:bg-slate-900 p-3 text-xl' type='submit'>+</button>
         </form>
         <ul>
           {items.map((item, id) => (
@@ -61,7 +66,7 @@ export default function Home() {
                 {item.name} - ${item.price}
 
               </div>
-              <button onClick={addItems} className='ml-4 p-4 border-l-2 border-slate-900 hover:bg-slate-950 w-16'>X</button>
+              <button className='ml-4 p-4 border-l-2 border-slate-900 hover:bg-slate-950 w-16'>X</button>
             </li>
           ))}
         </ul>
