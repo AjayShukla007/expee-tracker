@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 
 import { collection, addDoc } from "firebase/firestore";
+import { db } from './firebase';
 
 interface Items {
   name: string,
@@ -37,6 +38,13 @@ export default function Home() {
       // console.log(warning);
       return;
     }
+    // setitems([...items, newItem])
+    await addDoc(collection(db, 'items'), {
+      name: newItem.name.trim(),
+      price: newItem.price
+    })
+
+    setNewItem({name: '', price: 0})
 
 }
 
