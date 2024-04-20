@@ -24,7 +24,7 @@ export default function Home() {
     name: '',
     price: 0
   })
-  const [total, setTotal] = useState(0)
+  const [total, setTotal] = useState<number>(0)
   const [warning, setWarning] = useState<string>(' ')
   // Add items to the db
   const addItems = async (e: any) => {
