@@ -62,7 +62,18 @@ useEffect(() => {
     
     // read total from the itmes array
     const calculateTotal = () => {
-      const totalPrice = itemsArr.reduce((sum: number, item: { price: number }) => sum + item.price, 0)
+      const totalPrice = itemsArr.reduce(
+        (sum: number, item: any) => {
+          
+          console.log(sum);
+          console.log(parseFloat(item.price));
+          return sum + parseFloat(item.price)
+          
+        },
+        0
+      );
+      console.log(totalPrice);
+      
       setTotal(totalPrice)
     }
     calculateTotal()
