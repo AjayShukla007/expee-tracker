@@ -1,6 +1,6 @@
 'use client'
 import Image from 'next/image'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Key } from 'react'
 import Link from 'next/link'
 
 import { collection, addDoc, getDoc, QuerySnapshot, query, onSnapshot, deleteDoc, doc } from "firebase/firestore";
@@ -13,8 +13,9 @@ interface Items {
 
 
 export default function Home() {
-
-  const [items, setitems] = useState([
+  // console.log(process.env.NEXT_PUBLIC_TEST_DATA)
+  const [items, setitems] = useState<any>([
+    // for development purpose dummy data
     // { name: 'coffee', price: 4.95 },
     // { name: 'movie', price: 20.00 },
     // { name: 'kurkure', price: 5.00 }
@@ -96,7 +97,7 @@ useEffect(() => {
           <button onClick={addItems} className='text-white bg-slate-950 hover:bg-slate-900 p-3 text-xl' type='submit'>+</button>
         </form>
         <ul>
-          {items.map((item, id) => (
+          {items.map((item: {name: string, price: number, id: number}, id: Key) => (
             <li key={id} className='bg-slate-900 my-4 flex justify-between'>
               <div className='p-4 w-full flex justify-between'>
                 {item.name} - ${item.price}
