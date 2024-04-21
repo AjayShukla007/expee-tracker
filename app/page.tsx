@@ -3,7 +3,7 @@ import Image from 'next/image'
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 
-import { collection, addDoc, getDoc, QuerySnapshot, query, onSnapshot } from "firebase/firestore";
+import { collection, addDoc, getDoc, QuerySnapshot, query, onSnapshot, deleteDoc, doc } from "firebase/firestore";
 import { db } from './firebase';
 
 interface Items {
@@ -63,16 +63,10 @@ useEffect(() => {
     // read total from the itmes array
     const calculateTotal = () => {
       const totalPrice = itemsArr.reduce(
-        (sum: number, item: any) => {
-          
-          console.log(sum);
-          console.log(parseFloat(item.price));
-          return sum + parseFloat(item.price)
-          
-        },
+        (sum: number, item: any) => sum + parseFloat(item.price),
         0
       );
-      console.log(totalPrice);
+      // console.log(totalPrice);
       
       setTotal(totalPrice)
     }
@@ -85,7 +79,10 @@ useEffect(() => {
   // update items from the db
 
   // delete items from the db
-
+  const deleteItems = async (id:any) => {
+    await deleteDoc(doc(db, 'items', id))
+    
+  }
 
   return (
     <main className='flex min-h-screen flex-col items-center justify-start p-24'>
@@ -105,7 +102,7 @@ useEffect(() => {
                 {item.name} - ${item.price}
 
               </div>
-              <button className='ml-4 p-4 border-l-2 border-slate-900 hover:bg-slate-950 w-16'>X</button>
+              <button onClick={() => deleteItems(item.id)} className='ml-4 p-4 border-l-2 border-slate-900 hover:bg-slate-950 w-16'>X</button>
             </li>
           ))}
         </ul>
