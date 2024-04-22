@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect, Key, ChangeEvent } from 'react'
+import React, { useState, useEffect, Key, ChangeEvent, FormEvent } from 'react'
 
 import { collection, addDoc, getDoc, QuerySnapshot, query, onSnapshot, deleteDoc, doc } from "firebase/firestore";
 import { db } from './firebase';
@@ -7,8 +7,14 @@ import { db } from './firebase';
 interface Items {
   name: string,
   price: number,
-  id?: number
+  id?: string
 }
+//* test interface
+/* interface Items1 {
+  name: string,
+  price: number,
+  id: string
+} */
 
 export default function Home() {
   const [items, setitems] = useState<Items[]>([
@@ -21,7 +27,7 @@ export default function Home() {
   const [total, setTotal] = useState<number>(0)
   const [warning, setWarning] = useState<string>(' ')
   // Add items to the db
-  const addItems = async (e: any) => {
+  const addItems = async (e: FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
     if (newItem.name === '' || newItem.price === 0) {
@@ -47,17 +53,17 @@ export default function Home() {
   useEffect(() => {
     const q = query(collection(db, 'items'))
     const unSubscribe = onSnapshot(q, (QuerySnapshot) => {
-      let itemsArr: any = []
+      let itemsArr: Items[] = []
 
       QuerySnapshot.forEach((doc) => {
-        itemsArr.push({ ...doc.data(), id: doc.id })
+        itemsArr.push({ ...doc.data(), id: doc.id } as Items)
       })
       setitems(itemsArr)
-
+      
       // read total from the itmes array
       const calculateTotal = () => {
         const totalPrice = itemsArr.reduce(
-          (sum: number, item: any) => sum + parseFloat(item.price),
+          (sum, item) => sum + parseFloat(item.price.toString()),
           0
         );
         // console.log(totalPrice);
@@ -72,9 +78,12 @@ export default function Home() {
   // update items from the db
   // [] todo
   // delete items from the db
-  const deleteItems = async (id: number): Promise<void> => {
+  const deleteItems = async (id: string)=> {
+    // console.log(id);
+    // console.log(items);
     try {
-      await deleteDoc(doc(db, 'items', id.toString()))
+      await deleteDoc(doc(db, 'items', id))
+      
     } catch (error) {
       setWarning('connot delete right now please try again later')
       console.log(error);
