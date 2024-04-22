@@ -23,8 +23,8 @@ export default function Home() {
   // Add items to the db
   const addItems = async (e: any) => {
     e.preventDefault();
-    
-    if (newItem.name === '' || newItem.price === 0){
+
+    if (newItem.name === '' || newItem.price === 0) {
       setWarning("PLEASE ENTER VALID INPUT")
       setTimeout(() => {
         setWarning(' ')
@@ -38,41 +38,41 @@ export default function Home() {
       price: newItem.price
     })
 
-    setNewItem({name: '', price: 0})
+    setNewItem({ name: '', price: 0 })
 
-}
+  }
 
 
   // Read items from the db 
-useEffect(() => {
-  const q = query(collection(db, 'items'))
-  const unSubscribe = onSnapshot(q, (QuerySnapshot)=>{
-    let itemsArr :any = []
+  useEffect(() => {
+    const q = query(collection(db, 'items'))
+    const unSubscribe = onSnapshot(q, (QuerySnapshot) => {
+      let itemsArr: any = []
 
-    QuerySnapshot.forEach((doc)=>{
-      itemsArr.push({...doc.data(), id: doc.id})
+      QuerySnapshot.forEach((doc) => {
+        itemsArr.push({ ...doc.data(), id: doc.id })
+      })
+      setitems(itemsArr)
+
+      // read total from the itmes array
+      const calculateTotal = () => {
+        const totalPrice = itemsArr.reduce(
+          (sum: number, item: any) => sum + parseFloat(item.price),
+          0
+        );
+        // console.log(totalPrice);
+        setTotal(totalPrice)
+      }
+      calculateTotal()
+      return () => unSubscribe()
     })
-    setitems(itemsArr)
-    
-    // read total from the itmes array
-    const calculateTotal = () => {
-      const totalPrice = itemsArr.reduce(
-        (sum: number, item: any) => sum + parseFloat(item.price),
-        0
-      );
-      // console.log(totalPrice);
-      setTotal(totalPrice)
-    }
-    calculateTotal()
-    return () => unSubscribe()
-  })
 
-}, [])
+  }, [])
 
   // update items from the db
   // [] todo
   // delete items from the db
-  const deleteItems = async (id:number): Promise<void> => {
+  const deleteItems = async (id: number): Promise<void> => {
     try {
       await deleteDoc(doc(db, 'items', id.toString()))
     } catch (error) {
@@ -88,7 +88,7 @@ useEffect(() => {
       <div className='bg-slate-800 p-4 rounded-lg'>
         <form className='grid grid-cols-6 items-center text-black'>
           <input onChange={(e: ChangeEvent<HTMLInputElement>) => setNewItem({ ...newItem, name: e.target.value })} value={newItem.name} className='col-span-3 p-3 border ' type="text" placeholder='Enter item' />
-          <input onChange={(e: ChangeEvent<HTMLInputElement>) => setNewItem({ ...newItem, price: parseFloat(e.target.value )})} value={newItem.price} className='col-span-2 p-3 border mx-3' type="number" placeholder='Enter $' />
+          <input onChange={(e: ChangeEvent<HTMLInputElement>) => setNewItem({ ...newItem, price: parseFloat(e.target.value) })} value={newItem.price} className='col-span-2 p-3 border mx-3' type="number" placeholder='Enter $' />
           <button onClick={addItems} className='text-white bg-slate-950 hover:bg-slate-900 p-3 text-xl' type='submit'>+</button>
         </form>
         <ul>
