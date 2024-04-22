@@ -1,24 +1,17 @@
 'use client'
-import Image from 'next/image'
-import React, { useState, useEffect, Key } from 'react'
-import Link from 'next/link'
+import React, { useState, useEffect, Key, ChangeEvent } from 'react'
 
 import { collection, addDoc, getDoc, QuerySnapshot, query, onSnapshot, deleteDoc, doc } from "firebase/firestore";
 import { db } from './firebase';
 
 interface Items {
   name: string,
-  price: number
+  price: number,
+  id?: number
 }
 
-
 export default function Home() {
-  // console.log(process.env.NEXT_PUBLIC_TEST_DATA)
-  const [items, setitems] = useState<any>([
-    // for development purpose dummy data
-    // { name: 'coffee', price: 4.95 },
-    // { name: 'movie', price: 20.00 },
-    // { name: 'kurkure', price: 5.00 }
+  const [items, setitems] = useState<Items[]>([
   ])
 
   const [newItem, setNewItem] = useState<Items>({
@@ -39,7 +32,7 @@ export default function Home() {
       // console.log(warning);
       return;
     }
-    // setitems([...items, newItem])
+
     await addDoc(collection(db, 'items'), {
       name: newItem.name.trim(),
       price: newItem.price
@@ -68,7 +61,6 @@ useEffect(() => {
         0
       );
       // console.log(totalPrice);
-      
       setTotal(totalPrice)
     }
     calculateTotal()
@@ -78,32 +70,35 @@ useEffect(() => {
 }, [])
 
   // update items from the db
-
+  // [] todo
   // delete items from the db
-  const deleteItems = async (id:any) => {
-    await deleteDoc(doc(db, 'items', id))
-    
+  const deleteItems = async (id:number): Promise<void> => {
+    try {
+      await deleteDoc(doc(db, 'items', id.toString()))
+    } catch (error) {
+      setWarning('connot delete right now please try again later')
+      console.log(error);
+    }
   }
 
   return (
     <main className='flex min-h-screen flex-col items-center justify-start p-24'>
       <p className='text-red-700 h-2'>{warning}</p>
-      <h1 className='text-4xl p-4'>Expence Tracker</h1>
-      <Link href="/about">About</Link>
+      <h1 className='text-2xl p-4'>Expence Tracker</h1>
       <div className='bg-slate-800 p-4 rounded-lg'>
         <form className='grid grid-cols-6 items-center text-black'>
-          <input onChange={(e: any) => setNewItem({ ...newItem, name: e.target.value })} value={newItem.name} className='col-span-3 p-3 border ' type="text" placeholder='Enter item' />
-          <input onChange={(e: any) => setNewItem({ ...newItem, price: e.target.value })} value={newItem.price} className='col-span-2 p-3 border mx-3' type="number" placeholder='Enter $' />
+          <input onChange={(e: ChangeEvent<HTMLInputElement>) => setNewItem({ ...newItem, name: e.target.value })} value={newItem.name} className='col-span-3 p-3 border ' type="text" placeholder='Enter item' />
+          <input onChange={(e: ChangeEvent<HTMLInputElement>) => setNewItem({ ...newItem, price: parseFloat(e.target.value )})} value={newItem.price} className='col-span-2 p-3 border mx-3' type="number" placeholder='Enter $' />
           <button onClick={addItems} className='text-white bg-slate-950 hover:bg-slate-900 p-3 text-xl' type='submit'>+</button>
         </form>
         <ul>
-          {items.map((item: {name: string, price: number, id: number}, id: Key) => (
+          {items.map((item, id: Key) => (
             <li key={id} className='bg-slate-900 my-4 flex justify-between'>
               <div className='p-4 w-full flex justify-between'>
                 {item.name} - ${item.price}
 
               </div>
-              <button onClick={() => deleteItems(item.id)} className='ml-4 p-4 border-l-2 border-slate-900 hover:bg-slate-950 w-16'>X</button>
+              <button onClick={() => deleteItems(item.id!)} className='ml-4 p-4 border-l-2 border-slate-900 hover:bg-slate-950 w-16'>X</button>
             </li>
           ))}
         </ul>
