@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect, Key, ChangeEvent, FormEvent } from 'react'
-
+import DOMPurify from 'dompurify';
 import { collection, addDoc, getDoc, QuerySnapshot, query, onSnapshot, deleteDoc, doc } from "firebase/firestore";
 import { db } from './firebase';
 
@@ -9,12 +9,6 @@ interface Items {
   price: number,
   id?: string
 }
-//* test interface
-/* interface Items1 {
-  name: string,
-  price: number,
-  id: string
-} */
 
 export default function Home() {
   const [items, setitems] = useState<Items[]>([
@@ -30,6 +24,9 @@ export default function Home() {
   const addItems = async (e: FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
+    const filterData = DOMPurify.sanitize('<div>hello</div>')
+    console.log(filterData);
+    
     if (newItem.name === '' || newItem.price === 0) {
       setWarning("PLEASE ENTER VALID INPUT")
       setTimeout(() => {
@@ -37,14 +34,15 @@ export default function Home() {
       }, 2000);
       // console.log(warning);
       return;
+    } else {
+      await addDoc(collection(db, 'items'), {
+        name: newItem.name.trim(),
+        price: newItem.price
+      })
+  
+      setNewItem({ name: '', price: 0 })
     }
 
-    await addDoc(collection(db, 'items'), {
-      name: newItem.name.trim(),
-      price: newItem.price
-    })
-
-    setNewItem({ name: '', price: 0 })
 
   }
 
