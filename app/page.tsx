@@ -24,9 +24,6 @@ export default function Home() {
   const addItems = async (e: FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    const filterData = DOMPurify.sanitize('<div>hello</div>')
-    console.log(filterData);
-    
     if (newItem.name === '' || newItem.price === 0) {
       setWarning("PLEASE ENTER VALID INPUT")
       setTimeout(() => {
@@ -35,11 +32,13 @@ export default function Home() {
       // console.log(warning);
       return;
     } else {
+      const filterName = DOMPurify.sanitize(newItem.name)
+      const filterPrice = DOMPurify.sanitize(newItem.price.toString())
       await addDoc(collection(db, 'items'), {
-        name: newItem.name.trim(),
-        price: newItem.price
+        name: filterName.trim(),
+        price: parseFloat(filterPrice)
       })
-  
+
       setNewItem({ name: '', price: 0 })
     }
 
@@ -57,7 +56,7 @@ export default function Home() {
         itemsArr.push({ ...doc.data(), id: doc.id } as Items)
       })
       setitems(itemsArr)
-      
+
       // read total from the itmes array
       const calculateTotal = () => {
         const totalPrice = itemsArr.reduce(
@@ -76,12 +75,12 @@ export default function Home() {
   // update items from the db
   // [] todo
   // delete items from the db
-  const deleteItems = async (id: string)=> {
+  const deleteItems = async (id: string) => {
     // console.log(id);
     // console.log(items);
     try {
       await deleteDoc(doc(db, 'items', id))
-      
+
     } catch (error) {
       setWarning('connot delete right now please try again later')
       console.log(error);
