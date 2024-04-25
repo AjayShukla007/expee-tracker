@@ -1,1 +1,1 @@
-# search your fevoright games in just one click
+# Manage and Track your expances in easy way
