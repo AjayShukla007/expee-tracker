@@ -3,12 +3,7 @@ import React, { useState, useEffect, Key, ChangeEvent, FormEvent } from 'react'
 import DOMPurify from 'dompurify';
 import { collection, addDoc, getDoc, QuerySnapshot, query, onSnapshot, deleteDoc, doc } from "firebase/firestore";
 import { db } from './firebase';
-
-interface Items {
-  name: string,
-  price: number,
-  id?: string
-}
+import Items from './utils/itemsInterface';
 
 export default function Home() {
   const [items, setitems] = useState<Items[]>([
